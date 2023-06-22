@@ -172,17 +172,19 @@ class CREATE_NEW_USER(QWidget):
         self.ChechKSP = QCheckBox("КСП")
         self.ChechSSP_1 = QCheckBox("ССП-Э1")
         self.ChechSSP_2 = QCheckBox("ССП-Э2")
+        self.Chech_woman_print = QCheckBox("Женские ведомости")
 
         self.layout_in_group_box.addWidget(self.Chech42,1,0)
         self.layout_in_group_box.addWidget(self.ChechKSP,1,1)
         self.layout_in_group_box.addWidget(self.ChechSSP_1,2,0)
         self.layout_in_group_box.addWidget(self.ChechSSP_2,2,1)
+        self.layout_in_group_box.addWidget(self.Chech_woman_print,3,0)
 
         self.Group_box_loyout.setLayout(self.layout_in_group_box)
         self.layout.addWidget(self.Group_box_loyout,6,0,1,5)
         
 
-        self.setFixedSize(300,250)
+        self.setFixedSize(300,260)
     
    
     def print_1(self):
@@ -242,11 +244,13 @@ class CREATE_NEW_USER(QWidget):
                         if self.ChechKSP.isChecked():
                             self.access_list.append("КСП")
                         if self.ChechSSP_1.isChecked():
-                            self.access_list.append("ССП-1")
+                            self.access_list.append("ССП Э1")
                         if self.ChechSSP_2.isChecked():
-                            self.access_list.append("ССП-2")
+                            self.access_list.append("ССП Э2")
+                        if self.Chech_woman_print.isChecked():
+                            self.access_list.append("Woman")
                             
-                        self.settings.setValue(user_name,[self.access_list])
+                        self.settings.setValue(user_name,self.access_list)
                         print(self.settings.value(user_name))
                         self.close()
                         self.AW = AVTORIZATION_WINDOW()

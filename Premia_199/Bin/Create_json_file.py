@@ -167,10 +167,10 @@ class CREATE_JSON_DATA():
                     # if str(calendar_time[x]) in (""):
                     #     continue
                     # else:
-                        if x<16:
+                        if x<15:
                             missed_day.append(x+1)
                             missed_day_dict[x+1] = calendar_time[x]
-                        elif x == 16:
+                        elif x == 15:
                             continue
                         else:
                             missed_day.append(x)
@@ -179,12 +179,12 @@ class CREATE_JSON_DATA():
 # проверяем чтобы совпадали часы(если человек брал за свой счет сколько то часов)
 
                 elif str(calendar_time[x])[0] != str(list_time_calendar[x]):
-                    if x<16:
+                    if x<15:
                         if str(calendar_time[x])[0] == "7":
                             continue
                         missed_day.append(x+1)
                         missed_day_dict[x+1] = calendar_time[x]
-                    elif x == 16:
+                    elif x == 15:
                             continue
                     else:
                         if str(calendar_time[x])[0] == "7":
@@ -194,10 +194,10 @@ class CREATE_JSON_DATA():
             
 # Проверяем на замещение
                 elif str(calendar_time[x])[1:3] in ("МН","мн","МВ","мв","МД","мд","м","М"):
-                    if x<16:
+                    if x<15:
                         missed_day.append(x+1)
                         missed_day_dict[x+1] = calendar_time[x]
-                    elif x == 16:
+                    elif x == 15:
                         continue
                     
                     else:

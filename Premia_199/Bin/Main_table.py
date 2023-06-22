@@ -118,32 +118,40 @@ class MAIN_WORK_TABLE(QWidget):
 
         # Проверка доступа
       
-        access_path = self.path_with_input.split("\\")[1]
+        access_path = self.path_with_input.split("\\")[2]
         self.settings.endGroup()
+        print(f"{access_path}")
 
         self.settings.beginGroup("GOD_parameters")
         Current_user = self.settings.value("Current_user")
 
 
         self.settings.beginGroup('Users_access')
-        user_access = self.settings.value(Current_user)
+        user_access = self.settings.value(self.AV.text_name.text())
         print(user_access)
+        
+        if user_access == None:
+            user_access = []
+        
+        if self.proffession_number == "87100" or "08300":
+            access_path = "Woman"
 
-        # if [access_path] in user_access:
-        if os.path.isfile(f'{self.path_with_input}'):
+        if access_path in user_access:
+            if os.path.isfile(f'{self.path_with_input}'):
 
-            if eval(self.TEMP["General"]["for_summ"]) == {}:
-                QMessageBox.warning(
-                    self, 'Ошибка', 'Ошибка: замещающих нет')   
+                if eval(self.TEMP["General"]["for_summ"]) == {}:
+                    QMessageBox.warning(
+                        self, 'Ошибка', 'Ошибка: замещающих нет')   
+                else:
+                    self.CE = CREATE_EXCELL(self.proffession_number)
+                    self.CE.Main()
+                    
             else:
-                self.CE = CREATE_EXCELL(self.proffession_number)
-                self.CE.Main()
+                QMessageBox.warning(
+                        self, 'Ошибка', 'Ошибка: замещающих нет')
         else:
             QMessageBox.warning(
-                    self, 'Ошибка', 'Ошибка: замещающих нет')
-        # else:
-        #     QMessageBox.warning(
-        #                 self, 'Ошибка', 'Ошибка: Нет доступа к печати ведомостей')
+                        self, 'Ошибка', 'Ошибка: Нет доступа к печати ведомостей')
 
     def Button_create_excell_file_connect_to_avtorization(self):
         
@@ -724,6 +732,6 @@ class MAIN_WORK_TABLE(QWidget):
  
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    main = MAIN_WORK_TABLE("87100")
+    main = MAIN_WORK_TABLE("87200")
     main.show()
     sys.exit(app.exec_())
