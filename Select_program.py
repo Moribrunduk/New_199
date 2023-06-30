@@ -1,14 +1,27 @@
 import sys
+import xlrd
+import xlwt
+import json
+import openpyxl
+from win32com.client import Dispatch
+
+sys.path.append("Talons")
+sys.path.append("Premia_199")
+
+from PyQt5 import Qt 
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QGridLayout, QLabel,QLineEdit,QPushButton,QWidget, QApplication, QMessageBox,QShortcut,QCheckBox, QGroupBox
+from PyQt5.QtCore import QSettings,QCoreApplication
+
+
 from PyQt5.QtGui import QFont,QPixmap
 from PyQt5.QtWidgets import QVBoxLayout,QLabel,QPushButton,QWidget, QApplication,QMainWindow
 from PyQt5.QtCore import QTimer, Qt
 
 
-# sys.path.insert(0,"Talons")
-# from Bin import Main_2
 
-sys.path.insert(0,"Premia_199")
-from Bin import Content
+
+
 
 
 class MAIN_WINDOW(QWidget):
@@ -58,7 +71,7 @@ class CHOOSE_WINDOW(QMainWindow):
         self.Button_sellect_Talons = QPushButton("Талоны")
         self.Button_sellect_Talons .setFont((QFont('Timez New Roman', 15)))
         self.Button_sellect_Talons.setFixedSize(280,100)
-        # self.Button_sellect_Talons.clicked.connect(self.Button_Talons_action)
+        self.Button_sellect_Talons.clicked.connect(self.Button_Talons_action)
         self.Main_layout.addWidget(self.Button_sellect_199)
         self.Main_layout.addWidget(self.Button_sellect_Talons)
 
@@ -68,12 +81,19 @@ class CHOOSE_WINDOW(QMainWindow):
         self.setFixedSize(300,220)
         self.show()
     
-    # def Button_Talons_action(self):
-    #     self.close()
-    #     self.MW = Main_2.MainWindow()
-    #     self.MW.initUI()
+    def Button_Talons_action(self):
+
+        sys.path.insert(0,"Talons")
+        from Bin import Main_2
+        
+        self.close()
+        self.MW = Main_2.MainWindow()
+        self.MW.initUI()
     
     def Button_199_action(self):
+        sys.path.insert(1,"Premia_199")
+        from Bin import Content
+
         self.close()
         self.CONT = Content.MAIN_WINDOW()
        

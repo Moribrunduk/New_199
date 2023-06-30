@@ -27,7 +27,7 @@ class MAIN_WINDOW(QMainWindow):
         self.Tab_DRGG()
         self.Tab_PZRS()
         self.Tab_FOTO()
-        # self.SETTINGS_TAB()
+        self.SETTINGS_TAB()
         self.layout = QGridLayout(self.centralwidget)
         self.layout.addWidget(self.tabWidget)
         self.showMaximized()

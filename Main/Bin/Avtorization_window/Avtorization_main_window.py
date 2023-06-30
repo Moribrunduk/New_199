@@ -6,12 +6,14 @@ from PyQt5.QtCore import QSettings,QCoreApplication
 
 
 
-
+def function_after_avtorization():
+    print('авторизовался')
 
 
 class AVTORIZATION_WINDOW(QWidget):
-    def __init__(self):
+    def __init__(self,function):
         super(AVTORIZATION_WINDOW,self).__init__()
+        self.function = function
         self.initUI()
         self.Main()
     
@@ -62,14 +64,13 @@ class AVTORIZATION_WINDOW(QWidget):
         self.settings = QSettings("NITIC")
         self.settings.beginGroup("GOD_parameters")
         self.settings.setValue("Password", "19921128Qe")
-        self.settings.endGroup()
+        self.settings.beginGroup("Users_passwords")
     
     def HotkeyKeybord(self):
         self.text_password.returnPressed.connect(self.button_ok.click)
     
     def Verification(self):
-        self.settings.beginGroup("GOD_parameters")
-        self.settings.beginGroup("Users_passwords")
+       
         
         user_name = self.text_name.text()
         password = self.text_password.text()
@@ -84,11 +85,9 @@ class AVTORIZATION_WINDOW(QWidget):
             QMessageBox.warning(
                 self, 'Ошибка', 'Ошибка: неверный пароль')
         else:
-            self.settings.endGroup()
-            self.settings.setValue("Current_user",f"{user_name}")
+            self.success_avtorization_function = self.function
+            self.success_avtorization_function()
             self.close()
-        self.settings.endGroup()
-        
 
     def ExitProgramm(self):
         sys.exit()
@@ -173,12 +172,14 @@ class CREATE_NEW_USER(QWidget):
         self.ChechSSP_1 = QCheckBox("ССП-Э1")
         self.ChechSSP_2 = QCheckBox("ССП-Э2")
         self.Chech_woman_print = QCheckBox("Женские ведомости")
+        self.Talons = QCheckBox("Печать талонов")
 
         self.layout_in_group_box.addWidget(self.Chech42,1,0)
         self.layout_in_group_box.addWidget(self.ChechKSP,1,1)
         self.layout_in_group_box.addWidget(self.ChechSSP_1,2,0)
         self.layout_in_group_box.addWidget(self.ChechSSP_2,2,1)
         self.layout_in_group_box.addWidget(self.Chech_woman_print,3,0)
+        self.layout_in_group_box.addWidget(self.Talons,3,1)
 
         self.Group_box_loyout.setLayout(self.layout_in_group_box)
         self.layout.addWidget(self.Group_box_loyout,6,0,1,5)
@@ -249,6 +250,9 @@ class CREATE_NEW_USER(QWidget):
                             self.access_list.append("ССП Э2")
                         if self.Chech_woman_print.isChecked():
                             self.access_list.append("Woman")
+                        if self.Talons.isChecked():
+                            self.access_list.append("Talons")
+
                             
                         self.settings.setValue(user_name,self.access_list)
                         print(self.settings.value(user_name))
@@ -273,6 +277,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     QCoreApplication.setApplicationName("NITIC")
     QCoreApplication.setApplicationName("GOD_PROGRAMM")
-    AW = AVTORIZATION_WINDOW()
+    AW = AVTORIZATION_WINDOW(function_after_avtorization)
     # CNU = CREATE_NEW_USER()
     sys.exit(app.exec_())

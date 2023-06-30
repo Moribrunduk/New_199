@@ -17,7 +17,7 @@ class CalenderX(QCalendarWidget):
 		self.highlighter_format.setForeground(self.palette().color(QPalette.HighlightedText))
 		self.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader) # Отключаем счетчик недель
 		self.clicked.connect(self.select_range)
-		self.select_date()# выбор года и месяца календаря, при запуске, в зависимости, от выбранного файла
+		# self.select_date()# выбор года и месяца календаря, при запуске, в зависимости, от выбранного файла
 
 		super().dateTextFormat()
 

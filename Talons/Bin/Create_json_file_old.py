@@ -29,43 +29,32 @@ class CREATE_JSON_DATA():
         all_data ["Табельный"]={}
         print(all_data)
 
-        # ищем ячейку с к оторой начинается 2 график
+        # ищем ячейку с которой начинается шифр профессии
         for row in range(0,work_sheet.nrows):
-            x = work_sheet.cell(row,5).value
-            if x == "2" or x == 2:
-                start_row = row+2
+            x = work_sheet.cell(row,4).value
+            if x == "87100":
+                start_row = row
                 print(start_row)
                 break
-
-        self.start_row = start_row+2
-        # ищем последнюю ячейку
+        self.start_row = start_row
+        # ищем последнюю ячейку для данного шифра профессии
         for row in range(start_row,work_sheet.nrows,2):
-            x = work_sheet.cell(row,5).value
-            if x == "2" or x == 2:
+            x = str(work_sheet.cell(row,4).value)
+            x = x.partition(".")[0]
+            if str(x) == str("87100"):
                 # +2 чтобы цеплял последнего человека([TEST])
                 final_row = row+2
         self.final_row = final_row
-        print(final_row)
         
         # # заполняем нашу базу данных из файла, по каждому табельному
 
         # #ГЛАВНЫЙ СКРИПТ
 
         for row in (range(start_row,final_row,2)):
-            
-            if int(work_sheet.cell(row,5).value) != 2:
-                continue
-
         
             sername = work_sheet.cell(row,2).value
             name = work_sheet.cell(row+1,2).value.replace(" ","")
             tabel_number = int(work_sheet.cell(row,1).value)
-            if "мастер" in str(work_sheet.cell(row,4).value):
-                profession = "Мастер РГД"
-            elif work_sheet.cell(row,4).value == "87100":
-                profession = "Деф-ст РГГ"
-            print(int(work_sheet.cell(row,5).value))
-            print(sername)
 
 
             #создаем список выработанных дней по табелю(обновляем с каждой итерацией)
@@ -103,7 +92,6 @@ class CREATE_JSON_DATA():
                         calendar_time.append(work_sheet.cell(row+1,cell).value)
             
             all_data["Табельный"][tabel_number] = {
-                    "должность":profession,
                     "фамилия":sername,
                     "инициалы":name,
                     "отработанные смены":calendar_time}

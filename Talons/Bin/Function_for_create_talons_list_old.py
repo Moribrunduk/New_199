@@ -48,13 +48,12 @@ class ALL_FUNCTION_TO_CREATE_TALONS_LIST():
         self.all_data = all_data
     
     def create_list_with_names_talons(self):
-        """функция,которая создает  список [табельный,фамилия инициалы,[дни когда работник получает талон],должность]"""
+        """функция,которая создает  список [табельный,фамилия инициалы,[дни когда работник получает талон]]"""
         list_with_names_talons = []
         tabels = self.all_data["Табельный"]
         for tabel in tabels:
             sername = (self.all_data["Табельный"][tabel]["фамилия"])
             name = (self.all_data["Табельный"][tabel]["инициалы"])
-            profession = ((self.all_data["Табельный"][tabel]["должность"]))
             del self.all_data["Табельный"][tabel]["отработанные смены"][15]
             work_days = self.all_data["Табельный"][tabel]["отработанные смены"]
             talons_days = []
@@ -73,7 +72,7 @@ class ALL_FUNCTION_TO_CREATE_TALONS_LIST():
                         talons_days.append(i)
                 except ValueError:
                     continue
-            list_with_names_talons.append([tabel,f"{sername} {name}", talons_days,profession])    
+            list_with_names_talons.append([tabel,f"{sername} {name}", talons_days])    
 
         self.list_with_names_talons = list_with_names_talons
     
@@ -99,7 +98,7 @@ class ALL_FUNCTION_TO_CREATE_TALONS_LIST():
                 if day >= self.start_data and day <= self.final_data:
                     day_list.append(day)
             if day_list != []:   #исключаем попадание в список людей которые в этот период не получают талоны
-                list_with_sortet_by_data.append([item[0],item[1],item[3],day_list])
+                list_with_sortet_by_data.append([item[0],item[1],"Деф-ст РГГ",day_list])
         
         self.list_with_sortet_by_data=list_with_sortet_by_data
     

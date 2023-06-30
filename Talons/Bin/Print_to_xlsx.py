@@ -9,13 +9,14 @@ from Function_for_create_talons_list import ALL_FUNCTION_TO_CREATE_TALONS_LIST a
 
 
 class PRINT_TO_XLS:
-    def __init__(self,start_data,final_data,month = "месяц",year = "год",brigadir = "бригадир"):
+    def __init__(self,start_data,final_data,month = "месяц",year = "год",brigadir = "бригадир",place = "неизвестный цех"):
         super(PRINT_TO_XLS,self).__init__()
         self.start_data = start_data
         self.final_data = final_data
         self.month = month
         self.year = year
         self.brigadir = brigadir
+        self.place = place
         self.CREATE_FORM = CREATE_FORM
     def main(self):
         self.create_xls_file()
@@ -123,18 +124,18 @@ class PRINT_TO_XLS:
                     self.worksheet.cell(start_row+12+i,start_column+4,"1").font = Font(size = 11,name = 'Times New Roman')
                     self.worksheet.cell(start_row+12+i,start_column+4).alignment = Alignment(horizontal="center",vertical='center')
     def save_workbook(self):
-        if not os.path.exists("Talons\\otchets"):
-            os.makedirs("Talons\\otchets")
-        path = "Talons\\otchets\\form.xlsx"
+        if not os.path.exists(f"Отчеты по талонам\\{self.place}\\{self.Month_function(self.month)}"):
+            os.makedirs(f"Отчеты по талонам\\{self.place}\\{self.Month_function(self.month)}")
+        path = f"Отчеты по талонам\\{self.place}\\{self.Month_function(self.month)}\\{self.start_data}-{self.final_data}.xlsx"
         self.workbook.save(path)
         
         xlApp = Dispatch('Excel.Application')
-        path = os.path.abspath ('Talons\\otchets\\form.xlsx')
+        path = os.path.abspath (f'Отчеты по талонам\\{self.place}\\{self.Month_function(self.month)}\\{self.start_data}-{self.final_data}.xlsx')
         wb = xlApp.Workbooks.open(path)
         wb.SaveAs(path[:-1], FileFormat=56)
         xlApp.Quit()
         os.remove(f"{path}")
 if __name__=="__main__":
-    pr = PRINT_TO_XLS(start_data=1,final_data=8)
+    pr = PRINT_TO_XLS(start_data=1,final_data=8,month=4)
     pr.main()
     

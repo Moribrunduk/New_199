@@ -1,11 +1,12 @@
 import sys
+import os
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QApplication, QFrame, QPushButton,QLineEdit,QLabel)
 from configparser import ConfigParser
 
 
 from widget_for_main_window import (DefectoscopistRGG , DefectoscopistPZRS, Fotolaborant, Form_with_day)
-sys.path.insert(1,"data")
+
 
 
 
@@ -38,25 +39,23 @@ class Settings_window(QWidget):
     def Save_data(self):
         """сохраняем данные введенные пользователем"""
         
+        # self.settings["87100"]["cv_three_tarif"]=self.DRGG.cv_three_tarif.text()
+        # self.settings["87100"]["cv_four_tarif"]=self.DRGG.cv_four_tarif.text()
+        # self.settings["87100"]["cv_five_tarif"]=self.DRGG.cv_five_tarif.text()
+        # self.settings["87100"]["cv_six_tarif"]=self.DRGG.cv_six_tarif.text()
+        # self.settings["87100"]["procent_text"]=self.DRGG.procent_text.text()
         
+        # self.settings["87200"]["cv_three_tarif"]=self.DPZRS.cv_three_tarif.text()
+        # self.settings["87200"]["cv_four_tarif"]=self.DPZRS.cv_four_tarif.text()
+        # self.settings["87200"]["cv_five_tarif"]=self.DPZRS.cv_five_tarif.text()
+        # self.settings["87200"]["cv_six_tarif"]=self.DPZRS.cv_six_tarif.text()
+        # self.settings["87200"]["procent_text"]=self.DPZRS.procent_text.text()
 
-        self.settings["87100"]["cv_three_tarif"]=self.DRGG.cv_three_tarif.text()
-        self.settings["87100"]["cv_four_tarif"]=self.DRGG.cv_four_tarif.text()
-        self.settings["87100"]["cv_five_tarif"]=self.DRGG.cv_five_tarif.text()
-        self.settings["87100"]["cv_six_tarif"]=self.DRGG.cv_six_tarif.text()
-        self.settings["87100"]["procent_text"]=self.DRGG.procent_text.text()
-        
-        self.settings["87200"]["cv_three_tarif"]=self.DPZRS.cv_three_tarif.text()
-        self.settings["87200"]["cv_four_tarif"]=self.DPZRS.cv_four_tarif.text()
-        self.settings["87200"]["cv_five_tarif"]=self.DPZRS.cv_five_tarif.text()
-        self.settings["87200"]["cv_six_tarif"]=self.DPZRS.cv_six_tarif.text()
-        self.settings["87200"]["procent_text"]=self.DPZRS.procent_text.text()
-
-        self.settings["08300"]["cv_three_tarif"]=self.FOTO.cv_three_tarif.text()
-        self.settings["08300"]["cv_four_tarif"]=self.FOTO.cv_four_tarif.text()
-        self.settings["08300"]["cv_five_tarif"]=self.FOTO.cv_five_tarif.text()
-        self.settings["08300"]["cv_six_tarif"]=self.FOTO.cv_six_tarif.text()
-        self.settings["08300"]["procent_text"]=self.FOTO.procent_text.text()
+        # self.settings["08300"]["cv_three_tarif"]=self.FOTO.cv_three_tarif.text()
+        # self.settings["08300"]["cv_four_tarif"]=self.FOTO.cv_four_tarif.text()
+        # self.settings["08300"]["cv_five_tarif"]=self.FOTO.cv_five_tarif.text()
+        # self.settings["08300"]["cv_six_tarif"]=self.FOTO.cv_six_tarif.text()
+        # self.settings["08300"]["procent_text"]=self.FOTO.procent_text.text()
 
         
         # сокращения дней
@@ -73,7 +72,7 @@ class Settings_window(QWidget):
         
         print("[INFO] --- save_conpleted --- [INFO]")
         
-        with open("data\SETTINGS.ini", "w",encoding="utf-8") as config_file:
+        with open("Main\Settings_199\SETTINGS.ini","w",encoding="utf-8") as config_file:
             self.settings.write(config_file)
 
     def initUI(self):

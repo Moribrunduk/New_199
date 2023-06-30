@@ -155,8 +155,7 @@ class MAIN_WORK_TABLE(QWidget):
 
     def Button_create_excell_file_connect_to_avtorization(self):
         
-        self.AV = Avtorization_main_window.AVTORIZATION_WINDOW()
-        self.AV.button_ok.clicked.connect(self.Button_create_excell_file_action)
+        self.AV = Avtorization_main_window.AVTORIZATION_WINDOW(self.Button_create_excell_file_action)
 
         
         
@@ -732,6 +731,6 @@ class MAIN_WORK_TABLE(QWidget):
  
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    main = MAIN_WORK_TABLE("87200")
+    main = MAIN_WORK_TABLE("87100")
     main.show()
     sys.exit(app.exec_())

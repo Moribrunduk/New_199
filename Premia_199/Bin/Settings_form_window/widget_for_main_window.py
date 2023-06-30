@@ -8,7 +8,7 @@ import configparser
 
 settings = configparser.ConfigParser()
 
-settings.read("data\SETTINGS.ini",encoding="utf-8")
+settings.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
 
 
 class DefectoscopistRGG(QWidget):

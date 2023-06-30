@@ -104,7 +104,9 @@ class Interface(QWidget):
             work_sheet = work_book.sheet_by_name("Табель")
             self.data_year = work_sheet.cell(1,0).value.replace(" ",'')
             print(self.data_year)
+            self.settings.setValue("Current_year",self.data_year)
             self.data_month = work_sheet.cell(1,2).value
+            self.settings.setValue("Current_month",self.data_month)
             print(self.data_month)
             self.tabel_label.setText(f"{self.data_month} {self.data_year}")
             self.create_json()

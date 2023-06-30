@@ -1,6 +1,5 @@
 import sys
 import os
-sys.path.insert(1,"Bin")
 from PyQt5.QtWidgets import QWidget, QApplication,QPushButton,QHBoxLayout,QFileDialog,QVBoxLayout,QLineEdit
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import Qt,QSettings
