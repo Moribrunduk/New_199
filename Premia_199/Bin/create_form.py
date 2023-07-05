@@ -37,7 +37,7 @@ def set_style(name="Arial", height = 10*20, bold=False, ahorz=0x01, avert=0x01,a
 # создаем документ
 workbook =xlwt.Workbook()
 # Получать рабочий лист
-# worksheet = workbook.add_sheet('form')
+worksheet = workbook.add_sheet('form')
 
 def write_excel(worksheet,start_row = 0,month = "месяц", year = 0000, number_vedom=0):
     # редактируемые данные

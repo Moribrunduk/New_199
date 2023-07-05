@@ -1,50 +1,93 @@
 import json
 import os
-import xlwt
+from win32com.client import Dispatch
+
 import openpyxl
+from openpyxl.styles import Font
+from openpyxl.styles import Alignment
+from openpyxl.styles import Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.page import PageMargins
+
 import configparser
 import math
 from create_form_new import CREATE_FORM
-from create_form import set_style
 from Create_file_with_user_input_in_table import CREATE_FILE
 from PyQt5.QtCore import QSettings
 
-class CREATE_EXCELL():
+
+class LOAD_DATA():
     def __init__(self, proffession_number):
         self.proffession_number = str(proffession_number)
-        super(CREATE_EXCELL, self).__init__()
-        self.Main()
-
-    def Main(self):
-        workbook = openpyxl.Workbook()
-        worksheet = workbook.active
-        self.CF = CREATE_FORM(worksheet = worksheet)
-        self.LoadAllInformation()
-        # self.write_to_file_string()
-
-    def LoadAllInformation(self):
-
         self.SETINGS  = configparser.ConfigParser()
         self.SETINGS.read('Main\Settings_199\SETTINGS.ini', encoding="utf-8")
+        self.settings = QSettings("NITIC")
+        self.settings.beginGroup("199_settings")
     
+    def Tarif(self):
         self.SETINGS_tarif = {self.proffession_number:
                                 {
                                     3:self.SETINGS[self.proffession_number]["cv_three_tarif"],
                                     4:self.SETINGS[self.proffession_number]["cv_four_tarif"],
                                     5:self.SETINGS[self.proffession_number]["cv_five_tarif"],
                                     6:self.SETINGS[self.proffession_number]["cv_six_tarif"]}}
-
+        return self.SETINGS_tarif
+    
+    def Procent(self):
         self.SETINGS_procent = {self.proffession_number : self.SETINGS[self.proffession_number]["procent_text"] }
-
-        self.settings = QSettings("NITIC")
-        self.settings.beginGroup("199_settings")
+        
+        return self.SETINGS_procent
+    
+    def Path_with_json(self):
         self.path_with_json = self.settings.value(f"Path_with_json_{self.proffession_number}")
+        return self.path_with_json
+    
+    def Path_for_excell(self):
         self.path_for_excell = self.settings.value(f"Path_for_excell_{self.proffession_number}")
-        self.settings.endGroup()
-        self.SETINGS_current_place = self.path_with_json.partition("\\")[-1].partition("\\")[-1].split("\\")[0]
-        self.SETINGS_current_data = self.path_with_json.partition("\\")[-1].partition("\\")[-1].partition("\\")[-1]
-        self.SETINGS_current_month = self.SETINGS_current_data.split("\\")[1]
-        self.SETINGS_current_year = self.SETINGS_current_data.split("\\")[0]
+        return self.path_for_excell
+    
+    def Current_place(self):
+        self.SETINGS_current_place = self.Path_with_json().partition("\\")[-1].partition("\\")[-1].split("\\")[0]
+        return self.SETINGS_current_place
+
+    def Current_data(self):
+        self.SETINGS_current_data = self.Path_with_json().partition("\\")[-1].partition("\\")[-1].partition("\\")[-1]
+        return self.SETINGS_current_data
+    
+    def Current_month_str(self):
+        return self.Current_data().split("\\")[1]
+    
+    def Current_month_int(self):
+        self.SETINGS_current_year = self.Current_data().split("\\")[0]
+        self.SETINGS_current_month = self.Current_data().split("\\")[1]
+        Year = {"01":"январь",
+                "02":"февраль",
+                "03":"март",
+                "04":"апрель",
+                "05":"май",
+                "06":"июнь",
+                "07":"июль",
+                "08":"август",
+                "09":"сентябрь",
+                "10":"октябрь",
+                "11":"ноябрь",
+                "12":"декабрь"}
+        for key,vallue in Year.items():
+            try:
+                if vallue == self.SETINGS_current_month:
+                    self.month = key
+            except Exception as ex:
+                print(ex)
+                self.month = "00"
+        self.year = self.SETINGS_current_year[2:4]
+
+        return self.month
+    
+    def Current_year_int(self):
+        return self.Current_data().split("\\")[0]
+
+    def Current_year_str(self):
+        self.SETINGS_current_year = self.Current_data().split("\\")[0]
      
         Year = {"01":"январь",
                 "02":"февраль",
@@ -67,14 +110,29 @@ class CREATE_EXCELL():
                 self.month = "00"
         self.year = self.SETINGS_current_year[2:4]
 
-        with open(self.path_with_json, "r", encoding="utf-8") as file:
+        return self.year
+
+    def All_data(self):
+        with open(self.Path_with_json(), "r", encoding="utf-8") as file:
                 self.all_data = json.load(file)
+        
+        return self.all_data
 
+    def Subtitutes(self):
         self.substitutes = configparser.ConfigParser()
-        self.substitutes.read(f"{self.path_for_excell}",encoding='utf-8')
+        self.substitutes.read(f"{self.Path_for_excell()}",encoding='utf-8')
+        return self.substitutes
 
+class CREATE_DATA_TO_WRITE_IN_EXCELL():
+    def __init__(self, proffession_number):
+        self.proffession_number = str(proffession_number)
+        super(CREATE_DATA_TO_WRITE_IN_EXCELL, self).__init__()
+        self.DATA = LOAD_DATA(self.proffession_number)
+    
+    def Main(self):
+        return self.CreateList()
 
-    def LoadDataAndCreateList(self):
+    def CreateList(self):
 
         """
         функция которая загружает данные из файла datalist of subtitutes.ini
@@ -88,7 +146,7 @@ class CREATE_EXCELL():
                             "Дефектоскопист РГГ")
 
         """
-
+        self.all_data = self.DATA.All_data()
         self.tabels = self.all_data["шифр"][str(self.proffession_number)]["Табельный"]
 
         # задаем название професии
@@ -135,7 +193,8 @@ class CREATE_EXCELL():
             return print_reason
         
         def PrintPeriod(start_day, final_day):
-
+            self.month = self.DATA.Current_month_int()
+            self.year = self.DATA.Current_year_str()
             if int(start_day) != int(final_day):
                 period = f"{int(start_day):02.0f}.{int(self.month):02.0f}-{int(final_day):02.0f}.{int(self.month):02.0f}.{int(self.year)}"
                 
@@ -152,6 +211,9 @@ class CREATE_EXCELL():
             return cvalification
         
         def CreateListForWriteXls():
+
+            self.substitutes = self.DATA.Subtitutes()
+            self.tarif = self.DATA.Tarif()
             list_for_write_xls = []
 
             for personal_number in self.tabels:
@@ -165,102 +227,222 @@ class CREATE_EXCELL():
                         (f"{PrintPeriod(item[2],item[3])}"),
                         (f"{PrintName(str(item[4]))}, таб {item[4]}"),
                         (f"{profession_name},{PrintCvalification(str(item[4]))} разряд"),
-                        (f"{self.SETINGS_tarif[str(self.proffession_number)][PrintCvalification(item[0])]} ")
+                        (f"{self.tarif[str(self.proffession_number)][PrintCvalification(item[0])]} ")
                                         ))
 
             return list_for_write_xls
 
         return CreateListForWriteXls()
 
+class CREATE_EXCELL():
+    def __init__(self, proffession_number,worksheet):
+        self.proffession_number = str(proffession_number)
+        self.worksheet = worksheet
+        super(CREATE_EXCELL, self).__init__()
+        # подгружаем данные из функции- возвращает список замещения
+        self.CDTWIE = CREATE_DATA_TO_WRITE_IN_EXCELL(self.proffession_number)
+        self.DATA = LOAD_DATA(self.proffession_number)
 
-    def write_to_file_string(self):
-        workbook =xlwt.Workbook()
-        # Получать рабочий лист
-        worksheet = workbook.add_sheet('form')
-        # считаем количество строк которые требуется создать
-        number_of_rows = len(self.LoadDataAndCreateList())
-        # считаем количество строк которые нужно создать в документе
-        # количество строк в замещении делим на 15(количество позиций возможные в документе)
-        # округляем до большего
-        count = math.ceil(number_of_rows/11)*40
-        create_file(worksheet=worksheet,count=count,month = self.SETINGS_current_month, year = self.SETINGS_current_year)
-        
-        # передаем информацию для записи
-        list_for_write = self.LoadDataAndCreateList()
-        
-        def write_row(start_row,start_column,count,value):
-            #sheet.merge(top_row, bottom_row, left_column, right_column)
-
-            # записываем порядковый номер:
-            worksheet.merge(start_row,start_row+1,start_column,start_column, set_style(bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            worksheet.write(start_row, start_column,str(count), set_style(ahorz=0x02,bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-
-            # записываем фамилию имя замещаемого:
-            worksheet.merge(start_row,start_row,start_column+1,start_column+2, set_style(bordleft=2,bordright=2,bordtop=2))
-            worksheet.write(start_row, start_column+1,value[0], set_style(ahorz=0x02,bordleft=2,bordtop=2))
-
-            # записываем профессию и разряд
-            worksheet.merge(start_row+1,start_row+1,start_column+1,start_column+2, set_style(bordleft=2, bordright=2,bordbottom=2))
-            worksheet.write(start_row+1, start_column+1,value[1], set_style(ahorz=0x02,bordleft=2, bordright=2,bordbottom=2))
-
-            # записываем причину отсутствия
-            worksheet.merge(start_row,start_row,start_column+3,start_column+4, set_style(bordleft=2,bordright=2,bordtop=2))
-            worksheet.write(start_row, start_column+3,value[2], set_style(ahorz=0x02,bordleft=2,bordtop=2))
-
-            # записываем период отсутствия
-            worksheet.merge(start_row+1,start_row+1,start_column+3,start_column+4, set_style(bordleft=2, bordright=2,bordbottom=2))
-            worksheet.write(start_row+1, start_column+3,value[3], set_style(ahorz=0x02,bordleft=2, bordright=2,bordbottom=2))
-
-            # записываем тариф
-            worksheet.merge(start_row,start_row+1,start_column+5,start_column+5, set_style(bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            worksheet.write(start_row, start_column+5,value[-1], set_style(ahorz=0x02,bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-
-            # записываем фамилию замещающего
-            worksheet.merge(start_row,start_row,start_column+6,start_column+8, set_style(bordleft=2, bordright=2,bordtop=2))
-            worksheet.write(start_row, start_column+6,value[4], set_style(ahorz=0x02,bordleft=2,bordtop=2))
-
-            # записываем профессию и разряд
-            worksheet.merge(start_row+1,start_row+1,start_column+6,start_column+8, set_style(bordleft=2, bordright=2,bordbottom=2))
-            worksheet.write(start_row+1, start_column+6,value[5], set_style(ahorz=0x02,bordleft=2, bordright=2,bordbottom=2))
+    def Main(self):
+        self.how_many_list_create()
+        self.Create_document()
+        self.Save_document()
+        self.Xlsx_to_xls()
             
-            # записываем процент оплаты от тарифа
-            worksheet.merge(start_row,start_row+1,start_column+9,start_column+9, set_style(bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            worksheet.write(start_row, start_column+9,f"{self.SETINGS_procent[str(self.proffession_number)]}%", set_style(ahorz=0x02,bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-
-            # согласие на исполнение(обьединение ячеек)
-            worksheet.merge(start_row,start_row+1,start_column+10,start_column+10, set_style(bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            worksheet.write(start_row, start_column+10,"", set_style(ahorz=0x02,bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            
-            # окончательный размер оплаты(обьединение ячеек)
-            worksheet.merge(start_row,start_row+1,start_column+11,start_column+11, set_style(bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            worksheet.write(start_row, start_column+11,"", set_style(ahorz=0x02,bordleft=2, bordright=2,bordtop=2,bordbottom=2))
-            
-        def write_file():
-            # Информация для заполнения первой строниы(13 строка на ней заканчивается форма)
-            start_row = 13
-            start_column = 1
-            # считаем количество строк
-            end_of_count = len(list_for_write)
-            row_count = 0
-            for count in range(0,end_of_count):
-                if count >10 and count%11==0:
-                    start_row+=18
-                    value = list_for_write[count]
-                    write_row(start_row+row_count,start_column,count+1,value)
-                    row_count+=2
-                else:
-                    value = list_for_write[count]
-                    write_row(start_row+row_count,start_column,count+1,value)
-                    row_count+=2
-            if not os.path.exists(f'ведомости\\{self.SETINGS_current_place}\\{self.SETINGS_current_year}\\{self.SETINGS_current_month}'):
-                os.makedirs(os.path.join(("ведомости"),(f"{self.SETINGS_current_place}"),(f"{self.SETINGS_current_year}"),(f"{self.SETINGS_current_month}")))
-            workbook.save(f'ведомости\\{self.SETINGS_current_place}\\{self.SETINGS_current_year}\\{self.SETINGS_current_month}\\{self.proffession_number}_199_{self.month}_{self.year}.xls')
-        write_file()
+    def how_many_list_create(self):
+        """Определяем сколько страниц в документе нужно создать"""
+        # 40
+        self.data_list = self.CDTWIE.Main()
+        self.rows_count = len(self.data_list)
+        # self.rows_count = 20
+        self.pages_count = math.ceil(self.rows_count/11)
+        return self.pages_count
     
+    def Create_document(self):
+        # создаем документ, с нужным количеством страниц
+        self.start_row = 1
+        for page in range(1,self.pages_count+1):
+            CREATE_FORM(worksheet=worksheet,
+                        start_row=self.start_row,
+                        month = self.DATA.Current_month_str())
+            self.start_row+=40
+        
+        self.current_row = 14
+        count = 1
+        
+        # добавляем в этот документ нужное количество строк(обведенное границами)
+        # заполняем строки
+        for row in range(1,self.rows_count+1):
+            self.write_border_row(current_row=self.current_row)
+            self.write_text_row(current_row = self.current_row,count = count, value = self.data_list)
+            count+=1
+            if count == 12:
+                self.current_row+=20
+                count = 1
+            else:
+                self.current_row+=2
+         
+    def write_border_row(self,current_row):
+        start_row = current_row
+        self.worksheet.cell(start_row, 2).border = Border(left=Side(style='medium'),
+													right=Side(style='medium'),
+													top=Side(style='medium'),
+													bottom=Side(style='medium'))
+        self.worksheet.cell(start_row, 2).alignment = Alignment(horizontal='center',vertical='center')
+        self.worksheet.cell(start_row, 2).font = Font(size=10, name='Times New Roman')
+        
+        self.worksheet.merge_cells(start_row = start_row,
+						end_row = start_row+1,
+						start_column = 2,
+						end_column = 2)
+		
+		#фамилия
+        self.worksheet.cell(start_row, 3).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='thin'))
+        self.worksheet.cell(start_row, 3).font = Font(size=10, name='Times New Roman')
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row,
+                        start_column = 3,
+                        end_column = 4)
+
+        #Профессия
+        self.worksheet.cell(start_row+1, 3).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='thin'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.cell(start_row+1, 3).font = Font(size=10, name='Times New Roman')
+        self.worksheet.merge_cells(start_row = start_row+1,
+                        end_row = start_row+1,
+                        start_column = 3,
+                        end_column = 4)
+
+        # Причина оотсутствия
+        self.worksheet.cell(start_row, 5).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style=None))
+        self.worksheet.cell(start_row, 5).font = Font(size=10, name='Times New Roman')
+        self.worksheet.cell(start_row, 5).alignment = Alignment(horizontal='center',vertical='center')
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row,
+                        start_column = 5,
+                        end_column = 6)
+        # Период отстутсвия
+        self.worksheet.cell(start_row+1, 5).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style=None),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.cell(start_row+1, 5).font = Font(size=10, name='Times New Roman')
+        self.worksheet.cell(start_row+1, 5).alignment = Alignment(horizontal='center',vertical='center')
+        self.worksheet.merge_cells(start_row = start_row+1,
+                        end_row = start_row+1,
+                        start_column = 5,
+                        end_column = 6)
+        #Тариф
+        self.worksheet.cell(start_row, 7).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.cell(start_row, 7).font = Font(size=10, name='Times New Roman')
+        self.worksheet.cell(start_row, 7).alignment = Alignment(horizontal='center',vertical='center')
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row+1,
+                        start_column = 7,
+                        end_column = 7)
+        #фамилия
+        self.worksheet.cell(start_row, 8).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='thin'))
+        self.worksheet.cell(start_row, 8).font = Font(size=10, name='Times New Roman')
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row,
+                        start_column = 8,
+                        end_column = 10)
+
+        #Профессия
+        self.worksheet.cell(start_row+1, 8).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='thin'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.cell(start_row+1, 8).font = Font(size=10, name='Times New Roman')
+        self.worksheet.merge_cells(start_row = start_row+1,
+                        end_row = start_row+1,
+                        start_column = 8,
+                        end_column = 10)
+        # Процент
+        self.worksheet.cell(start_row, 11).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.cell(start_row, 11).font = Font(size=10, name='Times New Roman')
+        self.worksheet.cell(start_row, 11).alignment = Alignment(horizontal='center',vertical='center')
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row+1,
+                        start_column = 11,
+                        end_column = 11)
+        # согласие
+        self.worksheet.cell(start_row, 12).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row+1,
+                        start_column = 12,
+                        end_column = 12)
+        # подпись
+        self.worksheet.cell(start_row, 13).border = Border(left=Side(style='medium'),
+                                                    right=Side(style='medium'),
+                                                    top=Side(style='medium'),
+                                                    bottom=Side(style='medium'))
+        self.worksheet.merge_cells(start_row = start_row,
+                        end_row = start_row+1,
+                        start_column = 13,
+                        end_column = 13)
+
+    def write_text_row(self,current_row,count,value):
+
+        self.worksheet.cell(current_row, 2,str(count))
+        self.worksheet.cell(current_row, 3,value[count-1][0])
+        self.worksheet.cell(current_row+1, 3,value[count-1][1])
+        self.worksheet.cell(current_row, 5,value[count-1][2])
+        self.worksheet.cell(current_row+1, 5,value[count-1][3])
+        self.worksheet.cell(current_row, 7,value[count-1][-1])
+        self.worksheet.cell(current_row, 8,value[count-1][4])
+        self.worksheet.cell(current_row+1, 8,value[count-1][5])
+        self.worksheet.cell(current_row, 11,f"{self.DATA.Procent()[str(self.proffession_number)]}%")
+        
+    def Save_document(self):
+        current_place = self.DATA.Current_place()
+        current_year = self.DATA.Current_year_int()
+        current_month = self.DATA.Current_month_str()
+        current_month_int = self.DATA.Current_month_int()
+
+        if not os.path.exists(f'ведомости\\{current_place}\\{current_year}\\{current_month}'):
+                os.makedirs(os.path.join(("ведомости"),(f"{current_place}"),(f"{current_year}"),(f"{current_month}")))
+        self.path_xlsx = f'ведомости\\{current_place}\\{current_year}\\{current_month}\\{self.proffession_number}_199_{current_year}_{current_month_int}.xlsx'
+        workbook.save(self.path_xlsx)
+
+    def Xlsx_to_xls(self):
+        xlApp = Dispatch('Excel.Application')
+        path = os.path.abspath (self.path_xlsx)
+        wb = xlApp.Workbooks.open(path)
+        wb.SaveAs(path[:-1], FileFormat=56)
+        xlApp.Quit()
+        os.remove(f"{path}")
 if __name__ == "__main__":
-    CE = CREATE_EXCELL("87100")
-    CE = ()
-   
+    # CDTWIE = CREATE_DATA_TO_WRITE_IN_EXCELL("87100")
+    # x = CDTWIE.Main()
+    # print(x)
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    CE = CREATE_EXCELL(proffession_number="87100",worksheet=worksheet)
+    CE.Main()
+    workbook.save("test_file.xlsx")
+    
+
     
 
 

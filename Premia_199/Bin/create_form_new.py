@@ -29,9 +29,11 @@ class CREATE_FORM():
     
 	def MAIN(self):
 		self.create_top()
-		self.create_work_table()
+		# self.create_work_table()
 		self.create_bottom()
 		self.width_column()
+		self.height_row()
+		self.settings()
 	
 	def create_top(self):
 
@@ -312,11 +314,11 @@ class CREATE_FORM():
 		x_value_21 = len(f'{self.main_person}/{self.main_person_name} / Мастер (руководитель работ)/{self.botiz}/{self.botiz_name}/')
 		#Собираем строку
 		
-		value_21 =f'{self.main_person}{int((142-x_value_21)/4)*"_"}/{self.main_person_name} / Мастер (руководитель работ){int((135-x_value_21)/4)*"_"}/{int((135-x_value_21)/4)*"_"}{self.botiz}{int((135-x_value_21)/4)*"_"}/{self.botiz_name}/'
+		value_21 =f'{self.main_person}{int((150-x_value_21)/4)*"_"}/{self.main_person_name} / Мастер (руководитель работ){int((150-x_value_21)/4)*"_"}/{int((150-x_value_21)/4)*"_"}{self.botiz}{int((150-x_value_21)/4)*"_"}/{self.botiz_name}/'
 		self.worksheet.cell(self.start_row+37, 2, value_21).alignment = Alignment(horizontal='left',vertical='center')
 		self.worksheet.cell(self.start_row+37, 2, value_21).font = Font(size = 10,name = 'Times New Roman')
 		
-		value_22 =f'{34*" "}подпись,дата{80*" "}подпись,дата{56*" "}подпись,дата'
+		value_22 =f'{34*" "}подпись,дата{90*" "}подпись,дата{76*" "}подпись,дата'
 		self.worksheet.cell(self.start_row+38, 2, value_22).alignment = Alignment(horizontal='left',vertical='center')
 		self.worksheet.cell(self.start_row+38, 2, value_22).font = Font(size = 10,name = 'Times New Roman')
 		
@@ -334,18 +336,23 @@ class CREATE_FORM():
 		self.worksheet.column_dimensions[get_column_letter(7)].width = 7.29+0.71
 		self.worksheet.column_dimensions[get_column_letter(8)].width = 8.43+0.71
 		self.worksheet.column_dimensions[get_column_letter(9)].width = 8.43+0.71
-		self.worksheet.column_dimensions[get_column_letter(9)].width = 9.71+0.71
+		self.worksheet.column_dimensions[get_column_letter(10)].width = 9.71+0.71
+		self.worksheet.column_dimensions[get_column_letter(11)].width = 15.57+0.71
+		self.worksheet.column_dimensions[get_column_letter(12)].width = 13.14+0.71
+		self.worksheet.column_dimensions[get_column_letter(13)].width = 15.14+0.71
+		self.worksheet.column_dimensions[get_column_letter(14)].width = 3+0.71
+	
+	def height_row(self):
+		for row in range(self.start_row,self.start_row+40):
+			self.worksheet.row_dimensions[row].height = 13.5
+	
+	def settings(self):
+		self.worksheet.page_setup.orientation = 'landscape'
+		self.worksheet.page_setup.paperSize = self.worksheet.PAPERSIZE_A4
+		self.worksheet.page_margins = PageMargins(left=1/2.54, right=1/2.54, top=1.2/2.54, bottom=1.3/2.54, header=1.3/2.54, footer=1.3/2.54)
+		# self.worksheet.print_options.horizontalCentered = True
+		self.worksheet.print_options.verticalCentered = True
 
-				
-
-
-		
-
-
-				
-		
-
-    
 if __name__ == '__main__':
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
