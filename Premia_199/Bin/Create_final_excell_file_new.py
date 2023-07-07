@@ -264,7 +264,8 @@ class CREATE_EXCELL():
         for page in range(1,self.pages_count+1):
             CREATE_FORM(worksheet=worksheet,
                         start_row=self.start_row,
-                        month = self.DATA.Current_month_str())
+                        month = self.DATA.Current_month_str(),
+                        year = self.DATA.Current_year_int())
             self.start_row+=40
         
         self.current_row = 14
