@@ -6,15 +6,13 @@ from PyQt5 import QtWidgets
 
 import configparser
 
-settings = configparser.ConfigParser()
-
-settings.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
-
-
 class DefectoscopistRGG(QWidget):
     def __init__(self):
         super(DefectoscopistRGG, self).__init__()
+        self.settings = configparser.ConfigParser()
+        self.settings.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
         self.initUI()
+
     def initUI(self):
 
         # создаем горизонтальную группировку которую вставим в рамку |3 ----
@@ -25,7 +23,7 @@ class DefectoscopistRGG(QWidget):
         # правый столбик в настройках
         self.layout_for_procent_in_settings = QVBoxLayout()
         procent_label = QLabel("% оплаты\n от тарифа")
-        self.procent_text = QLineEdit(settings["87100"]["procent_text"])
+        self.procent_text = QLineEdit(self.settings["87100"]["procent_text"])
         self.procent_text.setStyleSheet("QLineEdit{font-size: 25px}")
         self.procent_text.setMaximumSize(50,50)
         
@@ -39,7 +37,7 @@ class DefectoscopistRGG(QWidget):
         cv_three = QLabel("    3")
         cv_three.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_three_tarif = QLineEdit(settings["87100"]["cv_three_tarif"])
+        self.cv_three_tarif = QLineEdit(self.settings["87100"]["cv_three_tarif"])
         self.cv_three_tarif.setMaximumWidth(50)
         
         
@@ -52,7 +50,7 @@ class DefectoscopistRGG(QWidget):
         cv_four = QLabel("    4")
         cv_four.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_four_tarif = QLineEdit(settings["87100"]["cv_four_tarif"])
+        self.cv_four_tarif = QLineEdit(self.settings["87100"]["cv_four_tarif"])
         self.cv_four_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_four,1,0)
@@ -64,7 +62,7 @@ class DefectoscopistRGG(QWidget):
         cv_five = QLabel("    5")
         cv_five.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_five_tarif = QLineEdit(settings["87100"]["cv_five_tarif"])
+        self.cv_five_tarif = QLineEdit(self.settings["87100"]["cv_five_tarif"])
         self.cv_five_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_five,2,0)
@@ -76,7 +74,7 @@ class DefectoscopistRGG(QWidget):
         cv_six = QLabel("    6")
         cv_six.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_six_tarif = QLineEdit(settings["87100"]["cv_six_tarif"])
+        self.cv_six_tarif = QLineEdit(self.settings["87100"]["cv_six_tarif"])
         self.cv_six_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_six,3,0)
@@ -110,10 +108,21 @@ class DefectoscopistRGG(QWidget):
         
         # присваеваем главному экрану групировку виджетов
         self.setLayout(self.main_layout)
+    
+    def Save_data(self,settings_file):
+        settings_file["87100"]["cv_three_tarif"]=self.cv_three_tarif.text()
+        settings_file["87100"]["cv_four_tarif"]=self.cv_four_tarif.text()
+        settings_file["87100"]["cv_five_tarif"]=self.cv_five_tarif.text()
+        settings_file["87100"]["cv_six_tarif"]=self.cv_six_tarif.text()
+        settings_file["87100"]["procent_text"]=self.procent_text.text()
+        # with open("Main\Settings_199\SETTINGS_drgg.ini","w",encoding="utf-8") as config_file:
+        #     self.settings.write(config_file)
         
 class DefectoscopistPZRS(QWidget):
     def __init__(self):
         super(DefectoscopistPZRS, self).__init__()
+        self.settings = configparser.ConfigParser()
+        self.settings.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
         self.initUI()
 
     def initUI(self):
@@ -127,7 +136,7 @@ class DefectoscopistPZRS(QWidget):
         # правый столбик в настройках
         self.layout_for_procent_in_settings = QVBoxLayout()
         procent_label = QLabel("% оплаты\n от тарифа")
-        self.procent_text = QLineEdit(settings["87200"]["procent_text"])
+        self.procent_text = QLineEdit(self.settings["87200"]["procent_text"])
         self.procent_text.setStyleSheet("QLineEdit{font-size: 25px}")
         self.procent_text.setMaximumSize(50,50)
         
@@ -140,7 +149,7 @@ class DefectoscopistPZRS(QWidget):
         cv_three = QLabel("    3")
         cv_three.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_three_tarif = QLineEdit(settings["87200"]["cv_three_tarif"])
+        self.cv_three_tarif = QLineEdit(self.settings["87200"]["cv_three_tarif"])
         self.cv_three_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_three,0,0)
@@ -152,7 +161,7 @@ class DefectoscopistPZRS(QWidget):
         cv_four = QLabel("    4")
         cv_four.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_four_tarif = QLineEdit(settings["87200"]["cv_four_tarif"])
+        self.cv_four_tarif = QLineEdit(self.settings["87200"]["cv_four_tarif"])
         self.cv_four_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_four,1,0)
@@ -164,7 +173,7 @@ class DefectoscopistPZRS(QWidget):
         cv_five = QLabel("    5")
         cv_five.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_five_tarif = QLineEdit(settings["87200"]["cv_five_tarif"])
+        self.cv_five_tarif = QLineEdit(self.settings["87200"]["cv_five_tarif"])
         self.cv_five_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_five,2,0)
@@ -176,7 +185,7 @@ class DefectoscopistPZRS(QWidget):
         cv_six = QLabel("    6")
         cv_six.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_six_tarif = QLineEdit(settings["87200"]["cv_six_tarif"])
+        self.cv_six_tarif = QLineEdit(self.settings["87200"]["cv_six_tarif"])
         self.cv_six_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_six,3,0)
@@ -208,10 +217,21 @@ class DefectoscopistPZRS(QWidget):
         
         # присваеваем главному экрану групировку виджетов
         self.setLayout(self.main_layout)
+    
+    def Save_data(self,settings_file):
+        settings_file["87200"]["cv_three_tarif"]=self.cv_three_tarif.text()
+        settings_file["87200"]["cv_four_tarif"]=self.cv_four_tarif.text()
+        settings_file["87200"]["cv_five_tarif"]=self.cv_five_tarif.text()
+        settings_file["87200"]["cv_six_tarif"]=self.cv_six_tarif.text()
+        settings_file["87200"]["procent_text"]=self.procent_text.text()
+        # with open("Main\Settings_199\SETTINGS_pzrs.ini","w",encoding="utf-8") as config_file:
+        #     self.settings.write(config_file)
 
 class Fotolaborant(QWidget):
     def __init__(self):
         super(Fotolaborant, self).__init__()
+        self.settings = configparser.ConfigParser()
+        self.settings.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
         self.initUI()
 
     def initUI(self):
@@ -225,7 +245,7 @@ class Fotolaborant(QWidget):
         # правый столбик в настройках
         self.layout_for_procent_in_settings = QVBoxLayout()
         procent_label = QLabel("% оплаты\n от тарифа")
-        self.procent_text = QLineEdit(settings["08300"]["procent_text"])
+        self.procent_text = QLineEdit(self.settings["08300"]["procent_text"])
         self.procent_text.setStyleSheet("QLineEdit{font-size: 25px}")
         self.procent_text.setMaximumSize(50,50)
         
@@ -238,7 +258,7 @@ class Fotolaborant(QWidget):
         cv_three = QLabel("    3")
         cv_three.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_three_tarif = QLineEdit(settings["08300"]["cv_three_tarif"])
+        self.cv_three_tarif = QLineEdit(self.settings["08300"]["cv_three_tarif"])
         self.cv_three_tarif.setMaximumWidth(50)
         
         
@@ -251,7 +271,7 @@ class Fotolaborant(QWidget):
         cv_four = QLabel("    4")
         cv_four.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_four_tarif = QLineEdit(settings["08300"]["cv_four_tarif"])
+        self.cv_four_tarif = QLineEdit(self.settings["08300"]["cv_four_tarif"])
         self.cv_four_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_four,1,0)
@@ -263,7 +283,7 @@ class Fotolaborant(QWidget):
         cv_five = QLabel("    5")
         cv_five.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_five_tarif = QLineEdit(settings["08300"]["cv_five_tarif"])
+        self.cv_five_tarif = QLineEdit(self.settings["08300"]["cv_five_tarif"])
         self.cv_five_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_five,2,0)
@@ -275,7 +295,7 @@ class Fotolaborant(QWidget):
         cv_six = QLabel("    6")
         cv_six.setMaximumWidth(20)
         rub = QLabel("P")
-        self.cv_six_tarif = QLineEdit(settings["08300"]["cv_six_tarif"])
+        self.cv_six_tarif = QLineEdit(self.settings["08300"]["cv_six_tarif"])
         self.cv_six_tarif.setMaximumWidth(50)
         
         self.layout_for_group_cvalification.addWidget(cv_six,3,0)
@@ -308,48 +328,14 @@ class Fotolaborant(QWidget):
         # присваеваем главному экрану групировку виджетов
         self.setLayout(self.main_layout)
 
-        return self.main_layout
-
-class Form_with_day(QWidget):
-    def __init__(self):
-        super(Form_with_day, self).__init__()
-        self.initUI()
-        
-    def initUI(self):
-        self.main_layout = QGridLayout()
-        Title = QLabel("Сокращения в табеле")
-        Title.setStyleSheet("font: 15pt Arial")
-        Title.setAlignment(Qt.AlignBottom | Qt.AlignCenter)
-        self.main_layout.addWidget(Title,0,0,1,4)
-        self.main_layout.setAlignment(QtCore.Qt.AlignCenter)
-        days_keys = eval(settings["Days"]["days_keys"])
-        days_values = eval(settings["Days"]["days_values"])
-
-        dict_days_names = {}
-        for i in range(len(days_keys)):
-            dict_days_names[days_keys[i]] = days_values[i]
-
-        # dict_days_names = {'"ИО" - ':'И.о.мастера',
-        #                     '"О" - ':'Отпуск очередной',
-        #                     '"Э" - ':'Отпуск учебный',
-        #                     '"Р" - ':'Отпуск по беремености',
-        #                     '"А" - ':'Отпуск за свой счет',
-        #                     '"Ж" - ':'Пенсионный день/уход за детьми',
-        #                     '"Д" - ':'Донорский день',
-        #                     '"М" - ':'Медкомиссия',
-        #                     '"Б" - ':'Больничный',
-        #                     '"К" - ':'Командировка'}
-
-        x = 1
-        for key,value in dict_days_names.items():
-            label = QLabel(key)
-            self.Line = QLineEdit(value)
-            self.Line.setMinimumWidth(200)
-            self.main_layout.addWidget(label,x,1)
-            self.main_layout.addWidget(self.Line,x,2)
-            x+=1
-        self.setLayout(self.main_layout)
-        
+    def Save_data(self,settings_file):
+        settings_file["08300"]["cv_three_tarif"]=self.cv_three_tarif.text()
+        settings_file["08300"]["cv_four_tarif"]=self.cv_four_tarif.text()
+        settings_file["08300"]["cv_five_tarif"]=self.cv_five_tarif.text()
+        settings_file["08300"]["cv_six_tarif"]=self.cv_six_tarif.text()
+        settings_file["08300"]["procent_text"]=self.procent_text.text()
+        # with open("Main\Settings_199\SETTINGS_foto.ini","w",encoding="utf-8") as config_file:
+        #     self.settings.write(config_file)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     DRGG = DefectoscopistRGG()

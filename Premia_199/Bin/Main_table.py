@@ -3,8 +3,9 @@ import configparser
 import json
 import os
 import sys
+import openpyxl
 
-from Create_final_excell_file import CREATE_EXCELL
+from Create_final_excell_file_new import CREATE_EXCELL
 from Load_file_form import Change_profession
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSettings
@@ -143,8 +144,13 @@ class MAIN_WORK_TABLE(QWidget):
                     QMessageBox.warning(
                         self, 'Ошибка', 'Ошибка: замещающих нет')   
                 else:
-                    self.CE = CREATE_EXCELL(self.proffession_number)
+                    workbook = openpyxl.Workbook()
+                    worksheet = workbook.active
+                    self.CE = CREATE_EXCELL(proffession_number=self.proffession_number,
+                                            worksheet=worksheet,
+                                            workbook=workbook)
                     self.CE.Main()
+
                     
             else:
                 QMessageBox.warning(
@@ -418,7 +424,10 @@ class MAIN_WORK_TABLE(QWidget):
         
         print(type(summ))
         print(type(hours))
-        summ_per_hours = (summ/hours)
+        try:
+            summ_per_hours = (summ/hours)
+        except ZeroDivisionError:
+            summ_per_hours = 0
         print(summ_per_hours)
         
         for tabel in self.tabels.keys():

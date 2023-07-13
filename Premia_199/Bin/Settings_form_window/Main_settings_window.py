@@ -5,9 +5,10 @@ from PyQt5.QtWidgets import (QWidget, QGridLayout, QApplication, QFrame, QPushBu
 from configparser import ConfigParser
 
 
-from widget_for_main_window import (DefectoscopistRGG , DefectoscopistPZRS, Fotolaborant, Form_with_day)
-
-
+from widget_for_main_window import (DefectoscopistRGG , DefectoscopistPZRS, Fotolaborant)
+from Days_name_form import Form_with_day
+import Settings_for_excell
+from Settings_for_excell import Excell_settings
 
 
 
@@ -35,45 +36,23 @@ class Settings_window(QWidget):
     def DAYS_FUNC(self):
         self.DAYS = Form_with_day()
         return self.DAYS.main_layout
+    def EXCELL_FUNC(self):
+        self.EXCELL_SETTINGS = Excell_settings()
+        return self.EXCELL_SETTINGS.Main_layout
 
     def Save_data(self):
-        """сохраняем данные введенные пользователем"""
-        
-        # self.settings["87100"]["cv_three_tarif"]=self.DRGG.cv_three_tarif.text()
-        # self.settings["87100"]["cv_four_tarif"]=self.DRGG.cv_four_tarif.text()
-        # self.settings["87100"]["cv_five_tarif"]=self.DRGG.cv_five_tarif.text()
-        # self.settings["87100"]["cv_six_tarif"]=self.DRGG.cv_six_tarif.text()
-        # self.settings["87100"]["procent_text"]=self.DRGG.procent_text.text()
-        
-        # self.settings["87200"]["cv_three_tarif"]=self.DPZRS.cv_three_tarif.text()
-        # self.settings["87200"]["cv_four_tarif"]=self.DPZRS.cv_four_tarif.text()
-        # self.settings["87200"]["cv_five_tarif"]=self.DPZRS.cv_five_tarif.text()
-        # self.settings["87200"]["cv_six_tarif"]=self.DPZRS.cv_six_tarif.text()
-        # self.settings["87200"]["procent_text"]=self.DPZRS.procent_text.text()
+        self.settings_file = ConfigParser()
+        self.settings_file.read("Main\Settings_199\SETTINGS.ini", encoding="utf-8")
 
-        # self.settings["08300"]["cv_three_tarif"]=self.FOTO.cv_three_tarif.text()
-        # self.settings["08300"]["cv_four_tarif"]=self.FOTO.cv_four_tarif.text()
-        # self.settings["08300"]["cv_five_tarif"]=self.FOTO.cv_five_tarif.text()
-        # self.settings["08300"]["cv_six_tarif"]=self.FOTO.cv_six_tarif.text()
-        # self.settings["08300"]["procent_text"]=self.FOTO.procent_text.text()
+        self.DRGG.Save_data(self.settings_file)
+        self.DPZRS.Save_data(self.settings_file)
+        self.FOTO.Save_data(self.settings_file)
+        self.DAYS.Save_data(self.settings_file)
+        self.EXCELL_SETTINGS.Save_data(self.settings_file)
 
-        
-        # сокращения дней
-        # По другому не придумал(начинается с 31.т.к до этого полно всяких лэйблов)
-        self.days_keys = [self.label.text() for self.label in self.findChildren(QLabel)]
-        
-
-        # расшифровка сокращений дней
-        # По другому не придумал(начинается с 15.т.к до этого полно всяких едитов)
-        self.days_values = [self.lineEdit.text() for self.lineEdit in self.findChildren(QLineEdit)]
-       
-        self.settings["Days"]["days_keys"]=str(self.days_keys[31:])
-        self.settings["Days"]["days_values"]=str(self.days_values[15:])
-        
-        print("[INFO] --- save_conpleted --- [INFO]")
-        
         with open("Main\Settings_199\SETTINGS.ini","w",encoding="utf-8") as config_file:
-            self.settings.write(config_file)
+            self.settings_file.write(config_file)
+
 
     def initUI(self):
 
@@ -92,12 +71,18 @@ class Settings_window(QWidget):
         DAYS = self.DAYS_FUNC()
         self.form_for_days = QFrame()
         self.form_for_days.setLayout(DAYS)
+
+        EXCELL = self.EXCELL_FUNC()
+        self.form_excell_settings = QFrame()
+        self.form_excell_settings.setLayout(EXCELL)
         # группировка для рамок
         self.layout_for_load_widget = QGridLayout()
         self.layout_for_load_widget.addWidget(self.form_for_rgg,0,0)
         self.layout_for_load_widget.addWidget(self.form_for_pzrs,1,0)
         self.layout_for_load_widget.addWidget(self.form_for_foto,2,0)
-        self.layout_for_load_widget.addWidget(self.form_for_days,0,1,3,4)
+        self.layout_for_load_widget.addWidget(self.form_for_days,0,1,2,1)
+        self.layout_for_load_widget.addWidget(self.form_excell_settings,2,1)
+
         self.layout_for_load_widget.setColumnMinimumWidth(1,100)
         self.layout_for_load_widget.setColumnStretch(1,100)
         self.layout_for_load_widget.setAlignment(self.form_for_days,QtCore.Qt.AlignTop)
@@ -105,7 +90,11 @@ class Settings_window(QWidget):
         self.button_save = QPushButton()
         self.button_save.setText("Cохранить")
         self.button_save.clicked.connect(self.Save_data)
-        self.layout_for_load_widget.addWidget(self.button_save,2,2)
+        # self.button_save_2 = QPushButton()
+        # self.button_save_2.setText("ока")
+        # self.button_save_2.clicked.connect(self.button_save.click)
+        self.layout_for_load_widget.addWidget(self.button_save,3,2)
+        # self.layout_for_load_widget.addWidget(self.button_save_2,4,2)
         # основная группировка
         self.setLayout(self.layout_for_load_widget)
     

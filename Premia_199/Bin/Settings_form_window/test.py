@@ -39,7 +39,7 @@ class Window(QMainWindow):
 		self.combo_box.addItems(geek_list)
 
 		# creating a editable combo box
-		self.combo_box.setEditable(False)
+		self.combo_box.setEditable(True)
 		self.combo_box.currentIndexChanged.connect(self.print_1)
 
 	def print_1(self):

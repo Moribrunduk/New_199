@@ -43,6 +43,8 @@ class LOAD_DATA():
         return self.path_with_json
     
     def Path_for_excell(self):
+        CE = CREATE_FILE(self.proffession_number)
+        CE.Main()
         self.path_for_excell = self.settings.value(f"Path_for_excell_{self.proffession_number}")
         return self.path_for_excell
     
@@ -80,7 +82,6 @@ class LOAD_DATA():
                 print(ex)
                 self.month = "00"
         self.year = self.SETINGS_current_year[2:4]
-
         return self.month
     
     def Current_year_int(self):
@@ -111,6 +112,32 @@ class LOAD_DATA():
         self.year = self.SETINGS_current_year[2:4]
 
         return self.year
+    
+    def Current_main_person(self):
+        return self.SETINGS["Excell_data"]["current_profession_index"]
+    def Current_main_person_name(self):
+        return self.SETINGS["Excell_data"]["current_main_name_index"]
+    def Current_botiz(self):
+        return self.SETINGS["Excell_data"]["current_botiz_profession_index"]
+    def Current_botiz_name(self):
+        return self.SETINGS["Excell_data"]["current_botiz_name_index"]
+
+    def Current_vedomosti(self):
+        if self.proffession_number =="87100":
+            if self.Current_place() == "ц.42":
+                return eval(self.SETINGS["Excell_data"]["vedomosti"])["42"]
+            if self.Current_place() == "КСП":
+                return eval(self.SETINGS["Excell_data"]["vedomosti"])["7"]
+            if self.Current_place() == "ССП Э1":
+                return eval(self.SETINGS["Excell_data"]["vedomosti"])["50"]
+            if self.Current_place() == "ССП Э2":
+                return eval(self.SETINGS["Excell_data"]["vedomosti"])["55"]
+        elif self.proffession_number =="87200":
+            return eval(self.SETINGS["Excell_data"]["vedomosti"])["PZRS"]
+        elif self.proffession_number =="08300":
+            return eval(self.SETINGS["Excell_data"]["vedomosti"])["foto"]
+        else:
+            return "____"
 
     def All_data(self):
         with open(self.Path_with_json(), "r", encoding="utf-8") as file:
@@ -128,6 +155,7 @@ class CREATE_DATA_TO_WRITE_IN_EXCELL():
         self.proffession_number = str(proffession_number)
         super(CREATE_DATA_TO_WRITE_IN_EXCELL, self).__init__()
         self.DATA = LOAD_DATA(self.proffession_number)
+        
     
     def Main(self):
         return self.CreateList()
@@ -235,8 +263,9 @@ class CREATE_DATA_TO_WRITE_IN_EXCELL():
         return CreateListForWriteXls()
 
 class CREATE_EXCELL():
-    def __init__(self, proffession_number,worksheet):
+    def __init__(self, proffession_number,worksheet,workbook):
         self.proffession_number = str(proffession_number)
+        self.workbook = workbook
         self.worksheet = worksheet
         super(CREATE_EXCELL, self).__init__()
         # подгружаем данные из функции- возвращает список замещения
@@ -262,10 +291,15 @@ class CREATE_EXCELL():
         # создаем документ, с нужным количеством страниц
         self.start_row = 1
         for page in range(1,self.pages_count+1):
-            CREATE_FORM(worksheet=worksheet,
+            CREATE_FORM(worksheet=self.worksheet,
                         start_row=self.start_row,
                         month = self.DATA.Current_month_str(),
-                        year = self.DATA.Current_year_int())
+                        year = self.DATA.Current_year_int(),
+                        main_person=self.DATA.Current_main_person(),
+                        main_person_name=self.DATA.Current_main_person_name(),
+                        botiz=self.DATA.Current_botiz(),
+                        botiz_name=self.DATA.Current_botiz_name(),
+                        number_vedom=self.DATA.Current_vedomosti())
             self.start_row+=40
         
         self.current_row = 14
@@ -424,7 +458,7 @@ class CREATE_EXCELL():
         if not os.path.exists(f'ведомости\\{current_place}\\{current_year}\\{current_month}'):
                 os.makedirs(os.path.join(("ведомости"),(f"{current_place}"),(f"{current_year}"),(f"{current_month}")))
         self.path_xlsx = f'ведомости\\{current_place}\\{current_year}\\{current_month}\\{self.proffession_number}_199_{current_year}_{current_month_int}.xlsx'
-        workbook.save(self.path_xlsx)
+        self.workbook.save(self.path_xlsx)
 
     def Xlsx_to_xls(self):
         xlApp = Dispatch('Excel.Application')
@@ -439,9 +473,8 @@ if __name__ == "__main__":
     # print(x)
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
-    CE = CREATE_EXCELL(proffession_number="87100",worksheet=worksheet)
+    CE = CREATE_EXCELL(proffession_number="87100",worksheet=worksheet,workbook=workbook)
     CE.Main()
-    workbook.save("test_file.xlsx")
     
 
     
